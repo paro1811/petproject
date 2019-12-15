@@ -1,4 +1,57 @@
 
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type=text/javascript>
+
+  function add_comment(e, postId) {
+      e.preventDefault();
+      cText=$("#comment_text_"+postId).val();
+      cPostId=postId;
+      cUserId=$("#user_id_"+postId).val();
+
+      console.log("c = "+cText);
+      console.log("p = "+cPostId);
+      console.log("u = "+cUserId);
+      $.ajax({
+        url:"/addComment",
+        type:"POST",
+        data:{comment_post_id:cPostId,comment_text:cText,comment_user_id:cUserId},
+        success: function(response) {
+            $("#result1").html(response.res);
+        },
+        error: function(xhr) {
+          $("#result1").html("failure!!!");
+        }
+      });
+
+  }//add_comment
+
+  $(function(){
+    $("#add_comment_btnxxx").bind('click',function(e){
+      e.preventDefault();
+      cText=$("#comment_text").val();
+      cPostId=$("#post_id").val();
+      cUserId=$("#user_id").val();
+
+      console.log("c = "+comment_text);
+      console.log("p = "+post_id);
+      console.log("u = "+user_id);
+      $.ajax({
+        url:"/addComment",
+        type:"POST",
+        data:{comment_post_id:cPostId,comment_text:cText,comment_user_id:cUserId},
+        success: function(response) {
+            $("#result1").html(response.res);
+        },
+        error: function(xhr) {
+          $("#result1").html("failure!!!");
+        }
+      });
+    });
+  });
+</script>
+ 
+
     {% for post in posts %}
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
@@ -8,13 +61,11 @@
               <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
             </div>
             <h5><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h5>
+            <small class="text-muted">{{ post.date_posted|getDisplayDate  }}</small>
             <p class="article-content">{{ post.content }}</p>
             <img class="post-img"  src="{{ url_for('static', filename='profile_pics/' + post.picture) }}" > 
 
             {% include "show_comments.html" %}
-
-
-
 
           </div>
         </article>    

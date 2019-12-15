@@ -1,35 +1,9 @@
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type=text/javascript>
-  $(function(){
-    $("#add_comment_btn").bind('click',function(e){
-      e.preventDefault();
-      comment_text=$("#comment_text").val();
-      post_id=$("#post_id").val();
-      user_id={{ current_user.id }}
-
-      console.log("c = "+comment_text);
-      console.log("p = "+post_id);
-      console.log("u = "+{{ current_user.id }});
-      $.ajax({
-        url:"/addComment",
-        type:"POST",
-        data:{post_id:post_id,comment_text:comment_text,user_id:user_id},
-        success: function(response) {
-            $("#result1").html(response.res);
-        },
-        error: function(xhr) {
-          $("#result1").html("failure!!!");
-        }
-      });
-    });
-  });
-</script>
-
 <div class="border-top pt-3">
               <form  class="form-inline">
-              {{ formc.postId(value=post.id, id="post_id") }}
+              {{ formc.cPostId(value=post.id, id="post_id") }}
+              {{ formc.cUserId(value=current_user.id, id="user_id_"+post.id|string) }}
               {{ formc.hidden_tag() }}
                 
 
@@ -39,12 +13,13 @@
           
                 <div class="form-group mx-sm-3 mb-2" >
                   
-                  {{ formc.comment(class="form-control", placeholder="Add comment...", style="border-radius: 50px; outline-width: 0;", id="comment_text") }}
+                  {{ formc.cText(class="form-control", placeholder="Add comment...", style="border-radius: 50px; outline-width: 0;", id="comment_text_"+post.id|string) }}
       
                 </div>
             
                 <div class="form-group" >
-                  {{ formc.submit(class="btn btn-outline-info", style="border-radius: 50px; outline-width: 0;", id="add_comment_btn") }}
+
+                  {{ formc.submit(class="btn btn-outline-info", style="border-radius: 50px; outline-width: 0;", id="add_comment_btn", onclick="add_comment(event," + post.id|string + ")") }}
                 </div>
                 <div id=result1></div>
               </form>
@@ -55,20 +30,20 @@
             <!-- PRINTS COMMENT -->
             
             {% for comment in post.id|getComments %}
+                  {% set u = comment.user_id|getUser %}
                    <div class="comment">
               
-                    <img class="rounded-circle article-img" style="height:40px; width:40px;"  src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}" />
+                    <img class="rounded-circle article-img" style="height:40px; width:40px;"  src="{{ url_for('static', filename='profile_pics/' + u[0].image_file) }}" />
                       
                     <div class="card" style="border-radius: 25px; padding 20px; ">
+                      
                       <div class="card-header" style="height:40px">
-
-                        <a class="mr-2" href="{{ url_for('profile', user_id=current_user.id) }}">{{ current_user.username }}</a>
-                
+                       <a class="mr-2" href="{{ url_for('profile', user_id=u[0].id) }}">{{ u[0].username }}</a>
+                       <small class="text-muted">{{ comment.timestamp|getDisplayDate  }}</small>
                       </div>
+
                       <div class="card-body">
-                        
                         <p class="card-text">{{ comment.comment }}</p>
-                        
                       </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
 from werkzeug.utils import secure_filename
 from flask import jsonify
-import json
+import json, datetime
 
 
 @app.route('/')
@@ -18,12 +18,13 @@ def home():
     posts = Post.query.all()
     form = PostForm()
     formc = AddCommentForm()
-    return render_template('home.html', title='Home',form=form, legend='Create Post', posts=posts, formc=formc)#, comments=comments)
+    return render_template('home.html', title='Home',form=form, legend='Create Post', posts=posts, formc=formc)
 
 @app.route('/addPost', methods=['POST'])
 def addPost():
     print("in add post")
     form = PostForm()
+    picture=None 
     if form.validate_on_submit():
         if form.picture.data:
            picture=save_picture(form.picture.data)
@@ -38,8 +39,8 @@ def addPost():
 @login_required
 def addComment():
     cText = request.form['comment_text']
-    cPostId = request.form['post_id']
-    cUserId=request.form['user_id']
+    cPostId = request.form['comment_post_id']
+    cUserId=request.form['comment_user_id']
     print("----->"+cText)
     print("----->"+cPostId)
     comment = Comment(comment=cText, user_id=cUserId,  post_id = cPostId)
@@ -60,6 +61,9 @@ def getComments(postId):
     comments=Comment.query.filter_by(post_id=postId).all()
     return comments
 
+@app.template_filter('getDisplayDate')
+def getDisplayDate(d):
+    return d.strftime("%c")
 
 @app.route('/about')
 def about():
@@ -119,26 +123,31 @@ def my_posts():
 @app.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-
     return render_template('post.html', title=post.title, post=post)
 
 
 @app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_post(post_id):
+    print("entered update post")
     post = Post.query.get_or_404(post_id)
     if post.author != current_user:
         abort(403)
     form = PostForm()
+    print("recognized post form")
     if form.validate_on_submit():
+        print("entered post form")
         post.title = form.title.data
         post.content = form.content.data
         db.session.commit()
+        print("form is updated")
         flash('Your post has been updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
     elif request.method == 'GET':
+        print("--------->form is get")
         form.title.data = post.title
         form.content.data = post.content
+    print("--------->before render")
     return render_template('home.html', title='Update Post',
                            form=form, legend='Update Post')
 

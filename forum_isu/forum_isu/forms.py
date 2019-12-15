@@ -55,8 +55,9 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('That email is taken. Please choose a different one.')
 
 class AddCommentForm(FlaskForm):
-    comment = StringField(validators=[DataRequired()])
-    postId  = HiddenField()
-    submit = SubmitField('Submit')
+    cText    = StringField(validators=[DataRequired()])
+    cPostId  = HiddenField()
+    cUserId  = HiddenField()
+    submit   = SubmitField('Submit')
     
 
