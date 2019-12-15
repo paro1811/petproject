@@ -17,7 +17,8 @@
         type:"POST",
         data:{comment_post_id:cPostId,comment_text:cText,comment_user_id:cUserId},
         success: function(response) {
-            $("#result1").html(response.res);
+          $("#result1").html(response.res);
+
         },
         error: function(xhr) {
           $("#result1").html("failure!!!");
@@ -58,10 +59,11 @@
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2" href="{{ url_for('profile', user_id=post.user_id) }}">{{ post.author.username }}</a>
-              <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
             </div>
-            <h5><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h5>
-            <small class="text-muted">{{ post.date_posted|getDisplayDate  }}</small>
+            <div>
+              <h5><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h5>
+              <small class="text-muted">{{ post.date_posted|getDisplayDate  }}</small>
+            </div>
             <p class="article-content">{{ post.content }}</p>
             <img class="post-img"  src="{{ url_for('static', filename='profile_pics/' + post.picture) }}" > 
 

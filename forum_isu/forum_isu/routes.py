@@ -148,8 +148,8 @@ def update_post(post_id):
         form.title.data = post.title
         form.content.data = post.content
     print("--------->before render")
-    return render_template('home.html', title='Update Post',
-                           form=form, legend='Update Post')
+    return render_template('update_post.html', title='Update Post',
+                           form=form, legend='Update Post', post_id=post_id)
 
 
 @app.route("/post/<int:post_id>/delete", methods=['GET', 'POST'])

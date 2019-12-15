@@ -1,6 +1,7 @@
-
+{% extends "layout.html" %}
+{% block content %}
 <div class="content-section">
-    <form method="POST" enctype="multipart/form-data" action=/post/2/update }}>
+    <form method="POST" enctype="multipart/form-data" action="/post/{{post_id}}/update" >
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
@@ -41,9 +42,9 @@
                 </div>
         </fieldset>
         <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
+            {{ form.submit(class="btn btn-outline-info", value="Update") }}
         </div>
     </form>
 </div>
-
-    
+{% endblock content %}
+    }

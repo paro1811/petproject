@@ -28,7 +28,8 @@
 
 
             <!-- PRINTS COMMENT -->
-            
+            <div id=list_comments_div_{{post.id|string}}>
+
             {% for comment in post.id|getComments %}
                   {% set u = comment.user_id|getUser %}
                    <div class="comment">
@@ -47,6 +48,7 @@
                       </div>
                     </div>
                 </div>
+
                     <!--
                     <div class="border-top pt-3">
                       <img class="rounded-circle article-img" style="height: 40px; width: 40px;" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
@@ -54,3 +56,5 @@
                       <p>{{ comment.comment }}</p>
                     </div> -->
             {% endfor %}
+
+            </div>
