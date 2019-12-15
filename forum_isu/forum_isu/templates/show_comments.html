@@ -1,3 +1,5 @@
+
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script type=text/javascript>
   $(function(){
@@ -24,6 +26,7 @@
     });
   });
 </script>
+
 <div class="border-top pt-3">
               <form  class="form-inline">
               {{ formc.postId(value=post.id, id="post_id") }}
@@ -46,3 +49,15 @@
                 <div id=result1></div>
               </form>
             </div>
+         
+
+
+            <!-- PRINTS COMMENT -->
+            
+            {% for comment in post.id|getComments %}
+                    <div class="border-top pt-3">
+                      <img class="rounded-circle article-img" style="height: 40px; width: 40px;" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+                      <a class="mr-2" href="#">{{ current_user }}</a>
+                      <p>{{ comment.comment }}</p>
+                    </div>
+            {% endfor %}

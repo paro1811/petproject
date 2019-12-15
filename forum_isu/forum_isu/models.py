@@ -29,18 +29,18 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     picture = db.Column(db.String(20), nullable=False, default='default.jpg')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    #comments = db.relationship('AddComment', backref='article', lazy=True)
+    comments = db.relationship('Comment', backref='article', lazy=True)
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}', '{self.picture}')"
 
-class AddComment(db.Model):
+class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(100), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    comment_user = db.Column(db.String(20), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     
 
     def __repr__(self):
-        return f"AddComment('{self.comment}', '{self.timestamp}', '{self.comment_user}', '{self.post_id}')"
+        return f"Comment('{self.comment}', '{self.timestamp}', '{self.user_id}', '{self.post_id}')"

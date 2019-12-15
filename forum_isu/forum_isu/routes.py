@@ -4,10 +4,12 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, Flask
 from forum_isu import app, db, bcrypt
 from forum_isu.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AddCommentForm
-from forum_isu.models import User, Post, AddComment
+from forum_isu.models import User, Post, Comment
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
 from werkzeug.utils import secure_filename
+from flask import jsonify
+import json
 
 
 @app.route('/')
@@ -15,40 +17,58 @@ from werkzeug.utils import secure_filename
 def home():
     posts = Post.query.all()
     form = PostForm()
+    formc = AddCommentForm()
+    return render_template('home.html', title='Home',form=form, legend='Create Post', posts=posts, formc=formc)#, comments=comments)
+
+@app.route('/addPost', methods=['POST'])
+def addPost():
+    print("in add post")
+    form = PostForm()
     if form.validate_on_submit():
         if form.picture.data:
            picture=save_picture(form.picture.data)
-
         post = Post(title=form.title.data, content=form.content.data, author=current_user, picture=picture)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
 
-    formc=AddCommentForm()
-    comments=AddComment.query.all()
-
-    return render_template('home.html', title='Home',form=form, legend='Create Post', posts=posts, formc=formc, comments=comments)
 
 @app.route('/addComment', methods=['POST'])
 @login_required
 def addComment():
-    formc=AddCommentForm()
-    if formc.validate_on_submit():
-       # com=formc.comment.data
-        postid = formc.postId.data
-        comment = AddComment(comment=formc.comment.data, comment_user=current_user.username, post_id = postid)#, article=postid)
-        db.session.add(comment)
-        db.session.commit()
+    cText = request.form['comment_text']
+    cPostId = request.form['post_id']
+    cUserId=request.form['user_id']
+    print("----->"+cText)
+    print("----->"+cPostId)
+    comment = Comment(comment=cText, user_id=cUserId,  post_id = cPostId)
+    db.session.add(comment)
+    db.session.commit()
+    return jsonify(res="successxx")
 
-    return redirect(url_for('home'))
     
-    
+
+
+@app.template_filter('getUser')
+def getUser(userId):
+    user=User.query.filter_by(id=userId).all()
+    return user
+
+@app.template_filter('getComments')
+def getComments(postId):
+    comments=Comment.query.filter_by(post_id=postId).all()
+    return comments
 
 
 @app.route('/about')
 def about():
     return render_template ('about.html', title = "About")
+
+@app.route('/profile')
+def profile():
+
+    return render_template ('profile.html')
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -123,12 +143,16 @@ def update_post(post_id):
                            form=form, legend='Update Post')
 
 
-@app.route("/post/<int:post_id>/delete", methods=['POST'])
+@app.route("/post/<int:post_id>/delete", methods=['GET', 'POST'])
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
+    comments=Comment.query.filter_by(post_id=post_id).all()
     if post.author != current_user:
         abort(403)
+    for i in comments:
+        db.session.delete(i)
+        db.session.commit()
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted!', 'success')
