@@ -55,9 +55,27 @@
             <!-- PRINTS COMMENT -->
             
             {% for comment in post.id|getComments %}
+                   <div class="comment">
+              
+                    <img class="rounded-circle article-img" style="height:40px; width:40px;"  src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}" />
+                      
+                    <div class="card" style="border-radius: 25px; padding 20px; ">
+                      <div class="card-header" style="height:40px">
+
+                        <a class="mr-2" href="{{ url_for('profile', user_id=current_user.id) }}">{{ current_user.username }}</a>
+                
+                      </div>
+                      <div class="card-body">
+                        
+                        <p class="card-text">{{ comment.comment }}</p>
+                        
+                      </div>
+                    </div>
+                </div>
+                    <!--
                     <div class="border-top pt-3">
                       <img class="rounded-circle article-img" style="height: 40px; width: 40px;" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
                       <a class="mr-2" href="#">{{ current_user }}</a>
                       <p>{{ comment.comment }}</p>
-                    </div>
+                    </div> -->
             {% endfor %}
